@@ -1,0 +1,50 @@
+name: PlatformIO CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12.3
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.3'
+
+      - name: Install PlatformIO
+        run: |
+          curl -fsSL -o get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
+          python3 get-platformio.py
+          
+
+      - name: Run PlatformIO Build
+        run: |
+          source ~/.platformio/penv/bin/activate
+          pio run
+
+      - name: Collect firmware artifacts
+        run: |
+          mkdir -p artifacts
+          cp .pio/build/*/firmware.bin artifacts/
+          cp .pio/build/*/bootloader.bin artifacts/
+          cp .pio/build/*/partitions.bin artifacts/
+          cp .pio/build/*/littlefs.bin artifacts/ || true
+
+      - name: Upload all build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware_artifacts
+          path: artifacts
