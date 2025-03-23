@@ -59,12 +59,13 @@ void Task1(void *pvParameters) {
             // Reserved for IOT usage
         }
 
+
         uint16_t rawValue = analogRead(SOIL_PIN);
         int moisturePercent = logMoistureScale(rawValue, fromBottom, fromTop, curve);
         moisturePercent = constrain(moisturePercent, 0, 100);
 
-        Serial.printf("Raw value: %d\n", rawValue);
-        Serial.printf("Moisture percent: %d\n", moisturePercent);
+        // Serial.printf("Raw value: %d\n", rawValue);
+        // Serial.printf("Moisture percent: %d\n", moisturePercent);
 
         auto moisture_color = getMoistureColor(moisturePercent);
 
@@ -124,6 +125,11 @@ void setup() {
         if (!doc["curve"].isNull()) {
             curve = doc["curve"];
         }
+        //
+        //
+        // Serial.printf("From Bottom: %ld\n", fromBottom);
+        // Serial.printf("From Top: %ld\n", fromTop);
+        // Serial.printf("Curve: %f\n", curve);
     };
 
     simple_iot_setup();
